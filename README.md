@@ -23,6 +23,6 @@ cd lara7-backend-product
 Jalankan Laravel 7 dengan menggunakan perintah berikut:
 - php artisan serve
 
-Lalu buka browser dan ketikkan URL http://localhost:8000
+Lalu buka browser dan ketikkan URL http://localhost:8000/api/products
 
 
