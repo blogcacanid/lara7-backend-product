@@ -18,6 +18,12 @@ class ProductController extends Controller
         return response()->json($products);
     }
 
+    public function index_page()
+    {
+        $products = Product::paginate(10); // 10 records per page
+        return response()->json($products);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -36,12 +42,20 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $product = new Product([
-                'product_name' => $request->get('product_name'),
-                'product_price' => $request->get('product_price'),
+        $validatedData = $request->validate([
+          'product_name'    => 'required',
+          'product_price'   => 'required',
         ]);
-        $product->save();
-        return response()->json('Product Added Successfully');
+ 
+        $project = Product::create([
+          'product_name'    => $validatedData['product_name'],
+          'product_price'   => $validatedData['product_price'],
+        ]);
+        $msg = [
+            'success' => true,
+            'message' => 'Product Update Successfully!'
+        ];
+        return response()->json($msg);
     }
 
     /**
@@ -52,7 +66,8 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        $products = Product::find($id);
+        return response()->json($products);
     }
 
     /**
@@ -76,23 +91,44 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $product = Product::find($id);
-        $product->product_name = $request->get('product_name');
-        $product->product_price = $request->get('product_price');
-        $product->save();
-        return response()->json('Product Update Successfully');
+        $validatedData = $request->validate([
+          'product_name'    => 'required',
+          'product_price'   => 'required',
+        ]);
+        $products = Product::find($id);
+        $products->product_name = $validatedData['product_name'];
+        $products->product_price = $validatedData['product_price'];
+        $products->save();
+        $msg = [
+            'success' => true,
+            'message' => 'Product updated successfully'
+        ];
+        return response()->json($msg);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        $product = Product::find($id);
-        $product->delete();
+        $products = Product::find($id);
+        $products->delete();
         return response()->json('Product Deleted Successfully');
     }
+
+    public function delete($id)
+    {
+        $products = Product::find($id);
+        if(!empty($products)){
+            $products->delete();
+            $msg = [
+                'success' => true,
+                'message' => 'Product deleted successfully!'
+            ];
+            return response()->json($msg);
+        } else {
+            $msg = [
+                'success' => false,
+                'message' => 'Product deleted failed!'
+            ];
+            return response()->json($msg);
+        }
+    }    
 }
